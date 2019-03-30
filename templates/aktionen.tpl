@@ -5,7 +5,7 @@
   <h1>{$user->name}</h1>
 </div>
 <div class="container" style="margin-top:30px">
- <form method="post" action="/login.php">
+ <form method="post" action="/bestaetigung.php">
 
   <div class="row">
     <div class="col-sm-4">
@@ -19,7 +19,7 @@
   </div>
      <div class="row">
          <div class="col-sm-4">
-             {foreach from=aktionen item=aktion}
+             {foreach from=$aktionen item=aktion}
                 <div class="form-check">
                     <label class="form-check-label">
                         <input type="radio" class="form-check-input" name="optradio">{$aktion.aktion_name}

@@ -120,6 +120,13 @@ final class UserFactory
     }
 }
 
+if (isset($_SESSION['user']))
+{
+    $tmpUser = unserialize($_SESSION['user']);
+    $user = UserFactory::Instance();
+    $user->LoginById($tmpUser->id_hotel);
+}
+
 
 
 

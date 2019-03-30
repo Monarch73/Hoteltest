@@ -10,7 +10,6 @@ if (isset($_SESSION['user']))
     if ($user->validated)
     {
         $aktionen = $user->GetAktionen();
-        var_dump($aktionen);
         $smarty->assign('aktionen', $aktionen);
         $smarty->assign('user', $user);
         $smarty->display('aktionen.tpl');
