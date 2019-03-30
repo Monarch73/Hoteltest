@@ -1,6 +1,6 @@
 <?php
-require_once(__DIR__ . '../init.php');
-require_once(__DIR__ . '../UserFactory.php');
+require_once(__DIR__ . '/../configs/init.php');
+require_once(__DIR__ . '/../configs/UserFactory.php');
 
 if (isset($_POST['InputEmail1']) && isset($_POST['InputPassword1']))
 {
@@ -9,6 +9,7 @@ if (isset($_POST['InputEmail1']) && isset($_POST['InputPassword1']))
     if ($user->validated)
     {
         $prozente = $user->GetProzente();
+        $_SESSION['user'] = serialize($user);
         $smarty->assign('user', $user);
         $smarty->assign('prozente', $prozente);
         $smarty->display('prozente.tpl');
@@ -17,4 +18,4 @@ if (isset($_POST['InputEmail1']) && isset($_POST['InputPassword1']))
 }
 
 $smarty->assign('error_login',1);
-$smart->display('index.tpl');
+$smarty->display('index.tpl');
