@@ -3,6 +3,7 @@
   <h1>Partnerhaus Rabatt-Ampel</h1>
   <p>Partnerhaus tourenhotel.de</p> 
 </div>
+{include 'includes/messages.tpl'}
 <div class="container" style="margin-top:30px">
   <div class="row">
     <div class="col-sm-4">
