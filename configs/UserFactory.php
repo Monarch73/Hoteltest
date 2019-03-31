@@ -53,6 +53,22 @@ final class UserFactory
         }
     }
 
+    public function FindEmail($email)
+    {
+        if ($stmt = $this->con->prepare("SELECT h.hotel_id, h.hotel_name FROM th_hotels h WHERE h.hotel_email=?"))
+        {
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $stmt->bind_result($hotel_id, $hotel_name);
+            if ($stmt->fetch())
+            {
+                return array('hotel_id'=>$hotel_id, 'hotel_name'=>$hotel_name);
+            }
+        }
+
+        return false;
+    }
+
     public function LoginById($id)
     {
         if ($stmt = $this->con->prepare("SELECT h.hotel_id, h.hotel_email, h.hotel_name FROM th_hotels h WHERE  h.hotel_id = ?"))
@@ -70,6 +86,46 @@ final class UserFactory
         }
     }
 
+    public function SetPasswordLink()
+    {
+        if ($this->validated)
+        {
+            $code = $this->getToken(32);
+            if ($stmt = $this->con->prepare("update th_hotel_passwords set chpwd_code = ?, chpwd_code_expires = unix_timestamp()+30*60 where hotel_id = ?"))
+            {
+                $stmt->bind_param("si", $code, $this->id_hotel);
+                $stmt->execute();
+                return $code;
+            }
+        }
+
+        return false;
+    }
+
+    public function VerifyToken($hotel_id, $token)
+    {
+        if ($stmt = $this->con->prepare("select hotel_id from th_hotel_passwords where unix_timestamp() < chpwd_code_expires and  chpwd_code = ? and hotel_id = ?"))
+        {
+            $stmt->bind_param("si", $token, $hotel_id );
+            $stmt->execute();
+            $stmt->bind_result($hotel_id);
+            if ($stmt->fetch())
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function SetPassword($hotel_id, $password)
+    {
+        if ($stmt = $this->con->prepare("update th_hotel_passwords set chpwd_code = '', chpwd_code_expires=0, password=unhex(md5(?)) where hotel_id = ?"))
+        {
+            $stmt->bind_param("si",$password, $hotel_id);
+            $stmt->execute();
+        }
+    }
 
     public function GetProzente()
     {
@@ -117,6 +173,35 @@ final class UserFactory
         }
 
         return false;
+    }
+
+    private function crypto_rand_secure($min, $max)
+    {
+        $range = $max - $min;
+        if ($range < 1) return $min; // not so random...
+        $log = ceil(log($range, 2));
+        $bytes = (int) ($log / 8) + 1; // length in bytes
+        $bits = (int) $log + 1; // length in bits
+        $filter = (int) (1 << $bits) - 1; // set all lower bits to 1
+        do {
+            $rnd = hexdec(bin2hex(openssl_random_pseudo_bytes($bytes)));
+            $rnd = $rnd & $filter; // discard irrelevant bits
+        } while ($rnd > $range);
+        return $min + $rnd;
+    }
+
+    private function getToken($length)
+    {
+        $token = "";
+        $codeAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $codeAlphabet.= "abcdefghijklmnopqrstuvwxyz";
+        $codeAlphabet.= "0123456789";
+        $max = strlen($codeAlphabet); // edited
+
+        for ($i=0; $i < $length; $i++) {
+            $token .= $codeAlphabet[$this->crypto_rand_secure(0, $max-1)];
+        }
+        return $token;
     }
 }
 
