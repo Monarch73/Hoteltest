@@ -8,12 +8,17 @@ if (isset($_POST['InputEmail1']) && isset($_POST['InputPassword1']))
     $user->Login($_POST['InputEmail1'], $_POST['InputPassword1']);
     if ($user->validated)
     {
-        $prozente = $user->GetProzente();
+
         $_SESSION['user'] = serialize($user);
-        $smarty->assign('user', $user);
-        $smarty->assign('prozente', $prozente);
-        $smarty->display('prozente.tpl');
-        exit;
+        header('location: /prozente.php');
+        exit();
+       
+    }
+    else
+    {
+        $_SESSION['message']="Falscher Benutzername oder falsches Passowort.";
+        header('Location: /index.php');
+        exit();
     }
 }
 
