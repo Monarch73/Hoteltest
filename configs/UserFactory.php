@@ -131,15 +131,15 @@ final class UserFactory
     {
         if ($this->validated)
         {
-            if ($stmt = $this->con->prepare("SELECT prozent_name from th_hotel_prozente where hotel_id = ?"))
+            if ($stmt = $this->con->prepare("SELECT prozente_id,prozent_name from th_hotel_prozente where hotel_id = ?"))
             {
                 $stmt->bind_param("i",$this->id_hotel);
                 $stmt->execute();
-                $stmt->bind_result($prozentName);
+                $stmt->bind_result($prozent_id, $prozent_name);
                 $result = array();
-                while($stmt->fetch())
+                while($row=$stmt->fetch())
                 {
-                    $result[] = $prozentName;
+                    $result[] = array('prozent_id'=>$prozent_id, 'prozent_name'=>$prozent_name);
                 }
 
                 return $result;

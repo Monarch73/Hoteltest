@@ -10,7 +10,6 @@ if (isset($_SESSION['setpassword']) && isset($_POST['psw']))
     $hotel_id=$_SESSION['setpassword'];
     $newPassword = $_POST['psw'];
     $match = preg_match('/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/',$newPassword);
-    var_dump($match);
     if ($match !== FALSE && $match !== 0)
     {
         unset($_SESSION['setpassword']);
