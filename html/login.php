@@ -10,17 +10,16 @@ if (isset($_POST['InputEmail1']) && isset($_POST['InputPassword1']))
     {
 
         $_SESSION['user'] = serialize($user);
-        header('location: /prozente.php');
+        RedirectAndExit('/prozente.php');
         exit();
        
     }
     else
     {
         $_SESSION['message']="Falscher Benutzername oder falsches Passowort.";
-        header('Location: /index.php');
+        RedirectAndExit('/index.php');
         exit();
     }
 }
 
-$smarty->assign('error_login',1);
 $smarty->display('index.tpl');

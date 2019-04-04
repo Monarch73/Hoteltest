@@ -16,4 +16,8 @@ if (isset($_SESSION['message']))
     $smarty->assign('message', $message);
 }
 
-
+function RedirectAndExit($url)
+{
+    header('Location:' . $url, TRUE, 302);
+    exit;
+}
