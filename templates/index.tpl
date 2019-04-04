@@ -7,7 +7,7 @@
 <div class="container" style="margin-top:30px">
   <div class="row">
     <div class="col-sm-4">
-        <form method="post" action="/login.php">
+        <form method="post" action="#">
           <div class="form-group">
             <label for="InputEmail1">Email address</label>
             <input type="email" class="form-control" id="InputEmail1" name="InputEmail1" aria-describedby="emailHelp" placeholder="eMail">

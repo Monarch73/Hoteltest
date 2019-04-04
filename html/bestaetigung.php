@@ -10,5 +10,5 @@ if (isset($user))
     }
 }
 
-header('Location: /index.php');
+RedirectAndExit('/index.php');
 exit;

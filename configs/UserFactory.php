@@ -29,7 +29,7 @@ final class UserFactory
      */
     private function __construct()
     {
-        $this->con = new mysqli('192.168.1.9','hoteltest','hoteltest','db462252800');
+        $this->con = new mysqli('192.168.1.8','hoteltest','hoteltest','db462252800');
         if ($this->con->connect_error)
         {
             die("fehler mysqli config: ". $this->con->connect_error);

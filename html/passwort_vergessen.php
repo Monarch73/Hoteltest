@@ -16,7 +16,7 @@ if (isset($_SESSION['setpassword']) && isset($_POST['psw']))
         $user = UserFactory::Instance();
         $user->SetPassword($hotel_id, $newPassword);
         $_SESSION['message']='Passwort gesetzt, Sie koennen sich jetzt anmelden.';
-        header('location: /index.php');
+        RedirectAndExit('/index.php');
         exit;
     }
     else
@@ -76,7 +76,7 @@ if (isset($_POST['InputEmail1']))
         $mail->Body    .= "Bitte klicken Sie den Link um Ihr passwort setzen zu können.\r\n";
         $mail->send();
         $_SESSION['message'] = 'Ein aktivierungslink wurde an Ihre EMail-Adresse verschickt. Bitte überprüfen Sie ggfs auch Ihren Spam Ordner.';
-        header('location: /index.php');
+        RedirectAndExit('/index.php');
         exit();
     }
 }

@@ -5,7 +5,7 @@ require_once(__DIR__ . '/../configs/UserFactory.php');
 if (!isset($user))
 {
     $_SESSION['message']="Sitzung abgelaufen. Bitte neu anmelden.";
-    header('location: /');
+    RedirectAndExit('/');
 }
 
 if (isset($_POST['weiter']))
@@ -30,7 +30,7 @@ if (isset($_POST['weiter']))
 
     if (count($message)==0)
     {
-        
+
         $format = 'd.m.Y';
         $von = DateTime::createFromFormat($format, $_POST['von']);
         $bis = DateTime::createFromFormat($format, $_POST['bis']);
@@ -49,7 +49,7 @@ if (isset($_POST['weiter']))
 
         if (count($message)==0)
         {
-            header('location: /aktion.php');
+            RedirectAndExit('/aktion.php');
             exit;
         }
     }
