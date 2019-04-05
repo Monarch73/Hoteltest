@@ -16,11 +16,9 @@ if (!isset($_SESSION['hotelpage']) || !isset($_SESSION['hotelpage']['1']))
 }
 
 
-if (isset($_POST['weiter']) || isset($_POST['zurueck']))
+if (isset($post['weiter']) || isset($post['zurueck']))
 {
-    $_SESSION['hotelpage']['2'] = $_POST;
-    RedirectAndExit('/aktion.php');
-    exit;
+    $_SESSION['hotelpage']['2'] = $post;
 }
 
 if (!isset($_SESSION['hotelpage']['2']) || !isset($_SESSION['hotelpage']['2']['aktion']))
@@ -29,7 +27,7 @@ if (!isset($_SESSION['hotelpage']['2']) || !isset($_SESSION['hotelpage']['2']['a
 }
 else
 {
-    $smarty->assing('post', $_SESSION['hotelpage']['2']);
+    $smarty->assign('post', $_SESSION['hotelpage']['2']);
 }
 
 if (isset($_SESSION['hotelpage']['2']['weiter']))
@@ -48,15 +46,8 @@ if (isset($_SESSION['hotelpage']['2']['zurueck']))
 if ($user->validated)
 {
     $smarty->assign("page1", $_SESSION['hotelpage']['1']);
-    $prozente = $user->GetProzente();
-    foreach($prozente as $prozent)
-    {
-        if ($prozent['prozent_id'] == $_SESSION['hotelpage']['1']['prozente_id'])
-        {
-            $smarty->assign("prozent", $prozent);
-            break;
-        }
-    }
+    $prozent = $user->GetProzentById($_SESSION['hotelpage']['1']['prozente_id']);
+    $smarty->assign("prozent", $prozent);
 
     $aktionen = $user->GetAktionen();
     $smarty->assign('aktionen', $aktionen);

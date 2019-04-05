@@ -1,6 +1,6 @@
 <?php
 session_start();
-//require_once("smarty3/Smarty.class.php");
+
 require_once(__DIR__ . '/../vendor/autoload.php');
 $smarty = new Smarty;
 $smarty->setTemplateDir(__DIR__ . '/../templates');
@@ -20,4 +20,16 @@ function RedirectAndExit($url)
 {
     header('Location:' . $url, TRUE, 302);
     exit;
+}
+
+if (count($_POST) != 0)
+{
+    $_SESSION['postdata'] = $_POST;
+    RedirectAndExit($_SERVER['REQUEST_URI']);
+}
+
+if (isset($_SESSION['postdata']))
+{
+    $post = $_SESSION['postdata'];
+    unset($_SESSION['postdata']);
 }

@@ -8,22 +8,22 @@ if (!isset($user))
     RedirectAndExit('/');
 }
 
-if (isset($_POST['weiter']))
+if (isset($post['weiter']))
 {
-    $_SESSION['hotelpage']['1'] = $_POST;
-    $smarty->assign('post', $_POST);
+    $_SESSION['hotelpage']['1'] = $post;
+    $smarty->assign('post', $post);
     $message = array();
-    if (!isset($_POST['prozente_id']))
+    if (!isset($post['prozente_id']))
     {
         $message[] = 'Bitte wählen Sie eine Ermäßigungstufe';
     }
 
-    if (!isset($_POST['von']))
+    if (!isset($post['von']))
     {
         $message[] = 'Bitte wählen Sie ein Startdatum';
     }
 
-    if (!isset($_POST['bis']))
+    if (!isset($post['bis']))
     {
         $message[] = "Bitte wählen Sie ein Enddatum";
     }
@@ -32,8 +32,8 @@ if (isset($_POST['weiter']))
     {
 
         $format = 'd.m.Y';
-        $von = DateTime::createFromFormat($format, $_POST['von']);
-        $bis = DateTime::createFromFormat($format, $_POST['bis']);
+        $von = DateTime::createFromFormat($format, $post['von']);
+        $bis = DateTime::createFromFormat($format, $post['bis']);
         $jetzt = new DateTime();
         $heuteMorgen = $jetzt->format('Y-m-d');
 
@@ -59,9 +59,16 @@ if (isset($_POST['weiter']))
 }
 else
 {
-    // show some defaults.
-    $heuteMorgen = (new DateTime())->format('d.m.Y');
-    $smarty->assign('post', array( 'von' => $heuteMorgen, 'bis' => $heuteMorgen, 'prozente_id' => -1 ));
+    if (!isset($_SESSION['hotelpage']['1']))
+    {
+        // show some defaults.
+        $heuteMorgen = (new DateTime())->format('d.m.Y');
+        $smarty->assign('post', array( 'von' => $heuteMorgen, 'bis' => $heuteMorgen, 'prozente_id' => -1 ));
+    }
+    else
+    {
+        $smarty->assign('post', $_SESSION['hotelpage']['1']);
+    }
 }
 
 if (isset($user) && $user->validated)

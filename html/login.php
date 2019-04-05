@@ -2,14 +2,14 @@
 require_once(__DIR__ . '/../configs/init.php');
 require_once(__DIR__ . '/../configs/UserFactory.php');
 
-if (isset($_POST['InputEmail1']) && isset($_POST['InputPassword1']))
+if (isset($post['InputEmail1']) && isset($post['InputPassword1']))
 {
     $user = UserFactory::Instance();
-    $user->Login($_POST['InputEmail1'], $_POST['InputPassword1']);
+    $user->Login($post['InputEmail1'], $post['InputPassword1']);
     if ($user->validated)
     {
 
-        $_SESSION['user'] = serialize($user);
+        $_SESSION['user'] = $user->id_hotel;
         RedirectAndExit('/prozente.php');
         exit();
        
