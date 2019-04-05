@@ -13,7 +13,7 @@
                 {foreach from=$prozente item=prozentItem}
                     <div class="col">
                         <label class="btn btn-primary" style="margin: 5px">
-                            <input type="radio" name="prozente_id" id="option1" autocomplete="off" value="{$prozentItem['prozent_id']}" style="min-width: 120px">{$prozentItem['prozent_name']}
+                            <input type="radio" name="prozente_id" id="option1" autocomplete="off" value="{$prozentItem['prozent_id']}" {if $post['prozente_id'] == $prozentItem['prozent_id']}checked='checked'{/if} style="min-width: 120px">{$prozentItem['prozent_name']}
                         </label>
                     </div>
                 {/foreach}
