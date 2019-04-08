@@ -28,6 +28,7 @@ insert into th_hotel_prozente (hotel_id, prozent_name, prozent, selected) VALUEs
 insert into th_hotel_prozente (hotel_id, prozent_name, prozent, selected) VALUEs (1292, '15%',15,0);
 insert into th_hotel_prozente (hotel_id, prozent_name, prozent, selected) VALUEs (1292, '20%',20,0);
 insert into th_hotel_prozente (hotel_id, prozent_name, prozent, selected) VALUEs (1292, '25%',25,0);
+insert into th_hotel_prozente (hotel_id, prozent_name, prozent, selected) VALUEs (1292, '50%',50,0);
 
 update th_hotels set hotel_email ='monarch@hotmail.de' where hotel_id=1292;
 
