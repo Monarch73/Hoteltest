@@ -370,9 +370,20 @@ final class UserFactory
             $_SESSION['hotelpage'][2]['aktion'] = $data['aktion_id'];
         }
 
-        return true;
+    private function getToken($length)
+    {
+        $token = "";
+        $codeAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $codeAlphabet.= "abcdefghijklmnopqrstuvwxyz";
+        $codeAlphabet.= "0123456789";
+        $max = strlen($codeAlphabet); // edited
+
+        for ($i=0; $i < $length; $i++) {
+            $token .= $codeAlphabet[$this->crypto_rand_secure(0, $max-1)];
+        }
+        return $token;
     }
-    
+}
 
     private function crypto_rand_secure($min, $max)
     {

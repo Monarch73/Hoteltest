@@ -7,3 +7,6 @@
 /.vs
 /html/node_modules
 /vendor
+/html/test2.php
+/configs/mailsettings.php
+
