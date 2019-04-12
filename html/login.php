@@ -8,7 +8,7 @@ if (isset($post['InputEmail1']) && isset($post['InputPassword1']))
     $user->Login($post['InputEmail1'], $post['InputPassword1']);
     if ($user->validated)
     {
-
+        $user->LoadSession();
         $_SESSION['user'] = $user->id_hotel;
         RedirectAndExit('/prozente.php');
         exit();
