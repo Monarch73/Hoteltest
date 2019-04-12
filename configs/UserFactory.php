@@ -146,13 +146,13 @@ final class UserFactory
     {
         if ($this->validated)
         {
-            if ($stmt = $this->pdo->prepare("SELECT prozente_id,prozent_name from th_hotel_prozente where hotel_id = ?"))
+            if ($stmt = $this->pdo->prepare("SELECT prozente_id,prozent_name,selected from th_hotel_prozente where hotel_id = ?"))
             {
                 $stmt->execute(array($this->id_hotel));
                 $result = array();
                 while($row = $stmt->fetch())
                 {
-                    $result[] = array('prozent_id'=>$row['prozente_id'], 'prozent_name' => $row['prozent_name']);
+                    $result[] = array('prozent_id'=>$row['prozente_id'], 'prozent_name' => $row['prozent_name'], 'selected' => $row['selected']);
                 }
 
                 $stmt->closeCursor();
@@ -192,11 +192,58 @@ final class UserFactory
         return false;
     }
 
+    /**
+     * 
+     * @return boolean true if worked, false if it didn't
+     */
+    public function InitProzente()
+    {
+        if (!$this->validated)
+            return false;
+        
+        if (($stmt = $this->pdo->prepare("SELECT prozente_id,prozent_name from th_hotel_prozente where hotel_id = ?")))
+        {
+            $stmt->execute(array($this->id_hotel));
+            if ($stmt->rowCount()< 1)
+            {
+                $stmt = $this->pdo->prepare("insert into th_hotel_prozente (hotel_id, prozent_name, prozent, selected) VALUEs (?, '0%',0,0),(?, '5%',5,0),(?, '10%',10,0),(?, '15%',15,0),(?, '20%',20,0),(?, '25%',25,0),(?, '50%',50,0);");
+                $stmt->execute(array_fill(1,7,$this->id_hotel)); 
+            }
+        }
+    }
+
+    
+    /**
+     * 
+     * @param array $entity
+     * @return boolean true on success, false when fauled
+     */
+    public function SetProzentByEntity($entity)
+    {
+        if (!$this->validated)
+            return false;
+        
+        if (($stmt = $this->pdo->prepare("update th_hotel_prozente set selected = 0 where hotel_id = ?")))
+        {
+            $stmt->execute(array($this->id_hotel));
+        }
+        
+        if (($stmt = $this->pdo->prepare("update th_hotel_prozente set selected = 1 where hotel_id = ? and prozente_id = ?")))
+        {
+            $stmt->execute(array($this->id_hotel, $entity['prozente_id']));
+        }
+        
+        
+        return true;
+    }
+
+    
+    
     public function GetAktionen()
     {
         if ($this->validated)
         {
-            if ($stmt = $this->pdo->prepare("SELECT aktion_id,aktion_name,selected from th_hotel_rabatt_aktion where hotel_id = ?"))
+            if (($stmt = $this->pdo->prepare("SELECT aktion_id,aktion_name,selected from th_hotel_rabatt_aktion where hotel_id = ?")))
             {
                 $stmt->execute(array($this->id_hotel));
                 $result = array();
@@ -219,26 +266,84 @@ final class UserFactory
     public  function GetAktionById($id)
     {
         $id = (int)$id;
-        if ($this->validated)
+        if (!$this->validated)
+            return false;
+        
+        if (($stmt = $this->pdo->prepare("SELECT aktion_id,aktion_name,selected from th_hotel_rabatt_aktion where hotel_id = ? and aktion_id = ?")))
         {
-            if ($stmt = $this->pdo->prepare("SELECT aktion_id,aktion_name,selected from th_hotel_rabatt_aktion where hotel_id = ? and aktion_id = ?"))
+            $stmt->execute(array($this->id_hotel, $id));
+            if(($row = $stmt->fetch()))
             {
-                $stmt->execute(array($this->id_hotel, $id));
-                if(($row = $stmt->fetch()))
-                {
-                    $result = array(
-                        'aktion_id' => $row['aktion_id'],
-                        'aktion_name' => $row['aktion_name'],
-                        'aktion_selected' => $row['selected']
-                        );
-                }
-                $stmt->closeCursor();
-                return $result;
+                $result = array(
+                    'aktion_id' => $row['aktion_id'],
+                    'aktion_name' => $row['aktion_name'],
+                    'aktion_selected' => $row['selected']
+                    );
             }
+            $stmt->closeCursor();
+            return $result;
         }
 
+
         return false;
-}
+    }
+    
+    /**
+     * 
+     * @param array $entity
+     */
+    public function SetAktionByEntity($entity)
+    {
+        if (!$this->validated)
+            return false;
+        
+        if (($stmt = $this->pdo->prepare("update th_hotel_rabatt_aktion set selected = 0 where hotel_id = ?")))
+        {
+            $stmt->execute(array($this->id_hotel));
+        }
+
+        if (($stmt = $this->pdo->prepare("update th_hotel_rabatt_aktion set selected = 1 where hotel_id = ? and aktion_id = ?")))
+        {
+            $stmt->execute(array($this->id_hotel, $entity['aktion_id']));
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 
+     * @return boolean true if success
+     */
+    public function InitAktionen()
+    {
+        if (!$this->validated)
+            return false;
+
+        if (($stmt = $this->pdo->prepare("SELECT aktion_id,aktion_name,selected from th_hotel_rabatt_aktion where hotel_id = ?")))
+        {
+            $stmt->execute(array($this->id_hotel));
+            if ($stmt->rowCount()< 1)
+            {
+                $stmt = $this->pdo->prepare("insert into th_hotel_rabatt_aktion (hotel_id, aktion_name, selected) values (?, 'Auf die erste Übernachtung',0),(?, 'Auf alle Übernachtungen',0),(?, 'Auf alle Speisen',0),(?, 'Auf alle Getränke',0),(?, 'Auf die gesamte Rechnung',0);");
+                $stmt->execute(array($this->id_hotel,$this->id_hotel,$this->id_hotel,$this->id_hotel,$this->id_hotel));
+            }
+        }
+    }
+    
+    public function GetHotelData($id)
+    {
+        if (($stmt = $this->pdo->prepare("select * from th_hotels t inner join th_hotel_prozente p on (p.hotel_id = t.hotel_id and p.selected=1) inner join th_hotel_rabatt_aktion a on (a.hotel_id = p.hotel_id and a.selected=1) where t.hotel_id=?;")))
+        {
+            $stmt->execute(array($id));
+            if(($row = $stmt->fetch()))
+            {
+                return $row;
+            }
+        }
+        
+        return false;
+    }
+    
 
     private function crypto_rand_secure($min, $max)
     {

@@ -11,7 +11,7 @@ drop table if exists th_hotel_rabatt_aktion;
 create table th_hotel_passwords (hotel_id int not null, password binary(16), chpwd_code varchar(100), chpwd_code_expires int unsigned,  primary key(hotel_id));
 create table th_hotel_prozente (prozente_id int not null auto_increment,hotel_id int not null, prozent decimal(8,3) not null, prozent_name varchar(100), prozent_von int unsigned, prozent_bis int unsigned, selected tinyint not null, primary key(prozente_id));
 
-create table th_hotel_rabatt_aktion (aktion_id int not null auto_increment primary key, hotel_id int not null, aktion_name varchar(100) not null, selected tinyint not null); 
+create table th_hotel_rabatt_aktion (aktion_id int not null auto_increment primary key, hotel_id int not null, aktion_name varchar(100) not null, selected tinyint not null, von varchar(16) null, bis varchar(16) null); 
 
 INSERT into th_hotel_passwords (hotel_id) VALUES (1292);
 update th_hotel_passwords set `password`=UNHEX(MD5("123456")) where hotel_id=1292;
@@ -20,7 +20,7 @@ INSERT INTO th_hotel_rabatt_aktion (hotel_id, aktion_name, selected) VALUES (129
 INSERT INTO th_hotel_rabatt_aktion (hotel_id, aktion_name, selected) VALUES (1292, 'Auf alle Übernachtungen',0);
 INSERT INTO th_hotel_rabatt_aktion (hotel_id, aktion_name, selected) VALUES (1292, 'Auf alle Speisen',0);
 INSERT INTO th_hotel_rabatt_aktion (hotel_id, aktion_name, selected) VALUES (1292, 'Auf alle Getränke',0);
-INSERT INTO th_hotel_rabatt_aktion (hotel_id, aktion_name,selected) VALUES (1292, 'Auf die gesamte Rechnung',0);
+INSERT INTO th_hotel_rabatt_aktion (hotel_id, aktion_name,selected) VALUES  (1292, 'Auf die gesamte Rechnung',0);
 
 insert into th_hotel_prozente (hotel_id, prozent_name, prozent, selected) VALUEs (1292, '0%',0,0);
 insert into th_hotel_prozente (hotel_id, prozent_name, prozent, selected) VALUEs (1292, '5%',5,0);
