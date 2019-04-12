@@ -51,6 +51,8 @@ final class UserFactory
                 $this->email = $row['hotel_email']; // $hotel_email;
                 $this->id_hotel = $row['hotel_id']; //$hotel_id;
                 $this->name = $row['hotel_name']; //$hotel_name;
+                $this->InitAktionen();
+                $this->InitProzente();
             }
         }
     }
@@ -150,7 +152,7 @@ final class UserFactory
             {
                 $stmt->execute(array($this->id_hotel));
                 $result = array();
-                while($row = $stmt->fetch())
+                while(($row = $stmt->fetch()))
                 {
                     $result[] = array('prozent_id'=>$row['prozente_id'], 'prozent_name' => $row['prozent_name'], 'selected' => $row['selected']);
                 }
@@ -196,7 +198,7 @@ final class UserFactory
      * 
      * @return boolean true if worked, false if it didn't
      */
-    public function InitProzente()
+    private function InitProzente()
     {
         if (!$this->validated)
             return false;
@@ -263,7 +265,7 @@ final class UserFactory
         return false;
     }
     
-    public  function GetAktionById($id)
+    public function GetAktionById($id)
     {
         $id = (int)$id;
         if (!$this->validated)
@@ -314,7 +316,7 @@ final class UserFactory
      * 
      * @return boolean true if success
      */
-    public function InitAktionen()
+    private function InitAktionen()
     {
         if (!$this->validated)
             return false;
@@ -342,6 +344,33 @@ final class UserFactory
         }
         
         return false;
+    }
+
+    public function LoadSession()
+    {
+        if (!$this->validated)
+            return false;
+
+        
+        $data = $this->GetHotelData($this->id_hotel);
+        if ($data === false)
+            return false;
+        
+        if (!isset($_SESSION['hotelpage'][1]))
+        {
+            //array( 'von' => $heuteMorgen, 'bis' => $heuteMorgen, 'prozente_id' => -1 );
+            $_SESSION['hotelpage'][1]['von'] = $data['von'];
+            $_SESSION['hotelpage'][1]['bis'] = $data['bis'];
+            $_SESSION['hotelpage'][1]['prozente_id'] = $data['prozente_id'];
+        }
+        
+        if (!isset($_SESSION['hotelpage'][2]))
+        {
+            //array('aktion' => -1)
+            $_SESSION['hotelpage'][2]['aktion'] = $data['aktion_id'];
+        }
+
+        return true;
     }
     
 
