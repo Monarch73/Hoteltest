@@ -91,4 +91,27 @@ class EMail
         $mail->Body    = $hotelPage;
         $mail->send();
    }
+   
+   public function SendPasswordMail($body, $subject, $address)
+   {
+        global  $mailserver;
+        $mail = new PHPMailer(true);
+        $mail->SMTPDebug = 0;
+        $mail->isSMTP();
+        $mail->isHTML(true);
+        $mail->Host       = $mailserver['host'];
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $mailserver['username'];
+        $mail->Password   = $mailserver['password'];
+        $mail->Port       = $mailserver['port'];
+        $mail->CharSet = "UTF-8";
+
+        //Recipients
+        $mail->setFrom('nielsh@monarch.de', 'Niels Huesken');
+        $mail->addAddress($address, '');     // Add a recipient
+        $mail->Subject = $subject;
+        $mail->Body    = $body;
+        
+        $mail->send();
+   }
 }

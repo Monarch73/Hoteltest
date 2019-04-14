@@ -3,11 +3,41 @@
 final class UserFactory
 {
 
+    /**
+     *
+     * @var PDO Database connection
+     */
     private $pdo = null;
+    
+    /**
+     *
+     * @var boolean User logged in?
+     */
     public $validated = false;
+    
+    /**
+     *
+     * @var string Hotels EMailaddress
+     */
     public $email;
+    
+    /**
+     *
+     * @var string Hotels Name
+     */
     public $name;
+    
+    /**
+     *
+     * @var string Hotels Id
+     */
     public $id_hotel;
+    
+    /**
+     *
+     * @var string Hotel Owners Name
+     */
+    public $owner;
 
     /**
      * Call this method to get singleton
@@ -41,7 +71,7 @@ final class UserFactory
 
     public function Login($username, $password)
     {
-        if ($stmt = $this->pdo->prepare("SELECT h.hotel_id, h.hotel_email, h.hotel_name FROM th_hotels h inner join th_hotel_passwords p on (p.hotel_id = h.hotel_id)  WHERE h.hotel_email=:email")) // and p.password=unhex(md5(:password))"))
+        if ($stmt = $this->pdo->prepare("SELECT h.hotel_id, h.hotel_email, h.hotel_name, h.hotel_owner FROM th_hotels h inner join th_hotel_passwords p on (p.hotel_id = h.hotel_id)  WHERE h.hotel_email=:email")) // and p.password=unhex(md5(:password))"))
         {
             $stmt->execute(array(':email'=>$username));
             $x = $stmt->rowCount();
@@ -51,6 +81,7 @@ final class UserFactory
                 $this->email = $row['hotel_email']; // $hotel_email;
                 $this->id_hotel = $row['hotel_id']; //$hotel_id;
                 $this->name = $row['hotel_name']; //$hotel_name;
+                $this->owner = $row['hotel_owner']; // $hotel_owner
                 $this->InitAktionen();
                 $this->InitProzente();
             }
@@ -79,7 +110,7 @@ final class UserFactory
 
     public function LoginById($id)
     {
-        if ($stmt = $this->pdo->prepare("SELECT h.hotel_id, h.hotel_email, h.hotel_name FROM th_hotels h WHERE  h.hotel_id = ?"))
+        if ($stmt = $this->pdo->prepare("SELECT h.hotel_id, h.hotel_email, h.hotel_name, h.hotel_owner FROM th_hotels h WHERE  h.hotel_id = ?"))
         {
             $stmt->execute(array($id));
             if ($row = $stmt->fetch())
@@ -88,6 +119,7 @@ final class UserFactory
                 $this->email = $row['hotel_email'];
                 $this->id_hotel = $row['hotel_id'];
                 $this->name = $row['hotel_name'];
+                $this->owner = $row['hotel_owner'];
             }
             
             $stmt->closeCursor();
@@ -369,6 +401,7 @@ final class UserFactory
             //array('aktion' => -1)
             $_SESSION['hotelpage'][2]['aktion'] = $data['aktion_id'];
         }
+    }
 
     private function getToken($length)
     {
@@ -383,7 +416,6 @@ final class UserFactory
         }
         return $token;
     }
-}
 
     private function crypto_rand_secure($min, $max)
     {
@@ -398,20 +430,6 @@ final class UserFactory
             $rnd = $rnd & $filter; // discard irrelevant bits
         } while ($rnd > $range);
         return $min + $rnd;
-    }
-
-    private function getToken($length)
-    {
-        $token = "";
-        $codeAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        $codeAlphabet.= "abcdefghijklmnopqrstuvwxyz";
-        $codeAlphabet.= "0123456789";
-        $max = strlen($codeAlphabet); // edited
-
-        for ($i=0; $i < $length; $i++) {
-            $token .= $codeAlphabet[$this->crypto_rand_secure(0, $max-1)];
-        }
-        return $token;
     }
 }
 

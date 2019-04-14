@@ -63,11 +63,12 @@ if (isset($post['InputEmail1']))
 
         $address = $post['InputEmail1'];     // Add a recipient
         $subject = 'Passwort vergessen';
-        $body    = "Hotel: ". $user->name . "\r\n\r\n";
-        $body    .= $_SERVER['REQUEST_SCHEME'] . '://'.$_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . '?code='.$code.'&hotel_id='.$user->id_hotel."\r\n\r\n";
-        $body    .= "Bitte klicken Sie den Link um Ihr Passwort setzen zu können.\r\n";
 
-        $email->SendMail($body, $subject, $address);
+        $url = $_SERVER['REQUEST_SCHEME'] . '://'.$_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'] . '?code='.$code.'&hotel_id='.$user->id_hotel;
+        $smarty->assign('url', $url);
+        $smarty->assign('user', $user);
+        $body = $smarty->fetch('passwort_vergessen_email.tpl');
+        $email->SendPasswordMail($body, $subject, $address);
         
         $_SESSION['message'] = 'Ein aktivierungslink wurde an Ihre EMail-Adresse verschickt. Bitte überprüfen Sie ggfs auch Ihren Spam Ordner.';
         RedirectAndExit('/index.php');
