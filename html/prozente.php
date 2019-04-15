@@ -1,10 +1,9 @@
 <?php
-/**
- * @global UserFactory $user
- * @global Smarty $smarty
- */
 require_once(__DIR__ . '/../configs/init.php');
 require_once(__DIR__ . '/../configs/UserFactory.php');
+
+/* @var $user UserFactory */
+/* @var $smarty Smarty */
 
 if (isset($_SESSION['confirmationEMail']))
 {
@@ -82,6 +81,7 @@ else
 
 if (isset($user) && $user->validated)
 {
+    $user->InitProzente();
     $prozente = $user->GetProzente();
     $smarty->assign('user', $user);
     $smarty->assign('prozente', $prozente);

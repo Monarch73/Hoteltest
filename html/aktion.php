@@ -2,7 +2,10 @@
 require_once(__DIR__ . '/../configs/init.php');
 require_once(__DIR__ . '/../configs/UserFactory.php');
 
-if (!isset($user))
+/* @var $user UserFactory */
+/* @var $smarty Smarty */
+
+if (!isset($user) || !$user->validated)
 {
     $_SESSION['message']="Sitzung abgelaufen. Bitte neu anmelden.";
     RedirectAndExit('/login.php');
@@ -45,6 +48,7 @@ if (isset($_SESSION['hotelpage']['2']['zurueck']))
 
 if ($user->validated)
 {
+    $user->InitAktionen();
     $smarty->assign("page1", $_SESSION['hotelpage']['1']);
     $prozent = $user->GetProzentById($_SESSION['hotelpage']['1']['prozente_id']);
     $smarty->assign("prozent", $prozent);

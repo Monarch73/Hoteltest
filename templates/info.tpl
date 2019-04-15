@@ -15,7 +15,7 @@
         <div class="card-body">
             {$prozent['prozent_name']} {$aktion['aktion_name']}<br />
             Gültig von {$p1['von']} bis {$p1['bis']}<br />
-            <a href="/phpinfo.php">Zur Musteransicht</a><br />
+            <a href="{$detailurl nofilter}" target="_blank">Zur Musteransicht</a><br />
         </div>
         <div class="card-body">
             Sollten Sie nicht damit einverstanden sein, öffnen Sie bitte erneut Ihre <a href="/prozente.php">Administration</a>

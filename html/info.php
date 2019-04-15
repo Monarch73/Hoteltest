@@ -2,7 +2,8 @@
 require_once(__DIR__ . '/../configs/init.php');
 require_once(__DIR__ . '/../configs/UserFactory.php');
 require_once(__DIR__ . '/../configs/EMail.php');
-// @global Smarty $smarty
+
+/* @var $user UserFactory */
 
 if (isset($user) && isset($_SESSION['hotelpage']['1']) && isset($_SESSION['hotelpage']['2']) && isset($_SESSION['hotelpage']['3']))
 {
@@ -16,6 +17,7 @@ if (isset($user) && isset($_SESSION['hotelpage']['1']) && isset($_SESSION['hotel
 
     $aktion = $user->GetAktionById($_SESSION['hotelpage']['2']['aktion']);
     $smarty->assign("aktion", $aktion);
+    $smarty->assign("detailurl", 'https://www.mein-tourenhotel.de/de__'.$user->hotel_detail_link);
     $mail = $smarty->fetch("info.tpl");
     echo $mail;
     

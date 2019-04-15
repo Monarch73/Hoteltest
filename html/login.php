@@ -6,6 +6,7 @@ if (isset($post['InputEmail1']) && isset($post['InputPassword1']))
 {
     $user = UserFactory::Instance();
     $user->Login($post['InputEmail1'], $post['InputPassword1']);
+    sleep(2);
     if ($user->validated)
     {
         $user->LoadSession();
@@ -17,7 +18,7 @@ if (isset($post['InputEmail1']) && isset($post['InputPassword1']))
     else
     {
         $_SESSION['message']="Falscher Benutzername oder falsches Passowort.";
-        RedirectAndExit('/index.php');
+        RedirectAndExit('/login.php');
         exit();
     }
 }

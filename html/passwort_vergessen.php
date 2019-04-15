@@ -71,7 +71,7 @@ if (isset($post['InputEmail1']))
         $email->SendPasswordMail($body, $subject, $address);
         
         $_SESSION['message'] = 'Ein aktivierungslink wurde an Ihre EMail-Adresse verschickt. Bitte überprüfen Sie ggfs auch Ihren Spam Ordner.';
-        RedirectAndExit('/index.php');
+        RedirectAndExit('/login.php');
         exit();
     }
 }

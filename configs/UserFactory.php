@@ -38,6 +38,12 @@ final class UserFactory
      * @var string Hotel Owners Name
      */
     public $owner;
+    
+    /**
+     * 
+     * @var string Hotel detailseite
+     */
+    public $hotel_detail_link;
 
     /**
      * Call this method to get singleton
@@ -71,29 +77,27 @@ final class UserFactory
 
     public function Login($username, $password)
     {
-        if ($stmt = $this->pdo->prepare("SELECT h.hotel_id, h.hotel_email, h.hotel_name, h.hotel_owner FROM th_hotels h inner join th_hotel_passwords p on (p.hotel_id = h.hotel_id)  WHERE h.hotel_email=:email")) // and p.password=unhex(md5(:password))"))
+        if (($stmt = $this->pdo->prepare("SELECT h.hotel_id, h.hotel_email, h.hotel_name, h.hotel_owner, h.hotel_detail_link FROM th_hotels h inner join th_hotel_passwords p on (p.hotel_id = h.hotel_id)  WHERE hotel_active=1 and h.hotel_email=:email and p.password=unhex(md5(:password))")))
         {
-            $stmt->execute(array(':email'=>$username));
-            $x = $stmt->rowCount();
-            if ($row = $stmt->fetch())
+            $stmt->execute(array(':email'=>$username,':password'=>$password));
+            if (($row = $stmt->fetch()))
             {
                 $this->validated=true;
                 $this->email = $row['hotel_email']; // $hotel_email;
                 $this->id_hotel = $row['hotel_id']; //$hotel_id;
                 $this->name = $row['hotel_name']; //$hotel_name;
                 $this->owner = $row['hotel_owner']; // $hotel_owner
-                $this->InitAktionen();
-                $this->InitProzente();
+                $this->hotel_detail_link = $row['hotel_detail_link']; // hotel_detail_link
             }
         }
     }
 
     public function FindEmail($email)
     {
-        if ($stmt = $this->pdo->prepare("SELECT h.hotel_id, h.hotel_name FROM th_hotels h WHERE h.hotel_email=?"))
+        if (($stmt = $this->pdo->prepare("SELECT h.hotel_id, h.hotel_name FROM th_hotels h WHERE h.hotel_email=? and hotel_active=1")))
         {
             $stmt->execute(array($email));
-            if ($row = $stmt->fetch())
+            if (($row = $stmt->fetch()))
             {
                 $result = array('hotel_id'=> $row['hotel_id'], 'hotel_name'=>$row['hotel_name']);
             }
@@ -110,16 +114,17 @@ final class UserFactory
 
     public function LoginById($id)
     {
-        if ($stmt = $this->pdo->prepare("SELECT h.hotel_id, h.hotel_email, h.hotel_name, h.hotel_owner FROM th_hotels h WHERE  h.hotel_id = ?"))
+        if (($stmt = $this->pdo->prepare("SELECT h.hotel_id, h.hotel_email, h.hotel_name, h.hotel_owner, h.hotel_detail_link FROM th_hotels h WHERE hotel_active=1 and h.hotel_id = ?")))
         {
             $stmt->execute(array($id));
-            if ($row = $stmt->fetch())
+            if (($row = $stmt->fetch()))
             {
                 $this->validated=true;
                 $this->email = $row['hotel_email'];
                 $this->id_hotel = $row['hotel_id'];
                 $this->name = $row['hotel_name'];
                 $this->owner = $row['hotel_owner'];
+                $this->owner = $row['hotel_detail_link'];
             }
             
             $stmt->closeCursor();
@@ -131,11 +136,11 @@ final class UserFactory
         if ($this->validated)
         {
             $code = $this->getToken(32);
-            if ($stmt = $this->pdo->prepare("update th_hotel_passwords set chpwd_code = ?, chpwd_code_expires = unix_timestamp()+30*60 where hotel_id = ?"))
+            if (($stmt = $this->pdo->prepare("update th_hotel_passwords set chpwd_code = ?, chpwd_code_expires = unix_timestamp()+30*60 where hotel_id = ?")))
             {
                 $stmt->execute(array($code, $this->id_hotel));
                 $result = $code;
-                $stmt->close();
+                $stmt->closeCursor();
             }
         }
         if (isset($result))
@@ -148,10 +153,10 @@ final class UserFactory
 
     public function VerifyToken($hotel_id, $token)
     {
-        if ($stmt = $this->pdo->prepare("select hotel_id from th_hotel_passwords where unix_timestamp() < chpwd_code_expires and  chpwd_code = ? and hotel_id = ?"))
+        if (($stmt = $this->pdo->prepare("select hotel_id from th_hotel_passwords where unix_timestamp() < chpwd_code_expires and  chpwd_code = ? and hotel_id = ?")))
         {
             $stmt->execute(array( $token, $hotel_id ));
-            if ($row = $stmt->fetch())
+            if (($row = $stmt->fetch()))
             {
                 $result = true;
             }
@@ -169,10 +174,10 @@ final class UserFactory
 
     public function SetPassword($hotel_id, $password)
     {
-        if ($stmt = $this->pdo->prepare("update th_hotel_passwords set chpwd_code = '', chpwd_code_expires=0, password=unhex(md5(?)) where hotel_id = ?"))
+        if (($stmt = $this->pdo->prepare("update th_hotel_passwords set chpwd_code = '', chpwd_code_expires=0, password=unhex(md5(?)) where hotel_id = ?")))
         {
             $stmt->execute(array($password, $hotel_id));
-            $stmt->close();
+            $stmt->closeCursor();
         }
     }
 
@@ -180,7 +185,7 @@ final class UserFactory
     {
         if ($this->validated)
         {
-            if ($stmt = $this->pdo->prepare("SELECT prozente_id,prozent_name,selected from th_hotel_prozente where hotel_id = ?"))
+            if (($stmt = $this->pdo->prepare("SELECT prozente_id,prozent_name,selected from th_hotel_prozente where hotel_id = ?")))
             {
                 $stmt->execute(array($this->id_hotel));
                 $result = array();
@@ -230,7 +235,7 @@ final class UserFactory
      * 
      * @return boolean true if worked, false if it didn't
      */
-    private function InitProzente()
+    public function InitProzente()
     {
         if (!$this->validated)
             return false;
@@ -241,7 +246,8 @@ final class UserFactory
             if ($stmt->rowCount()< 1)
             {
                 $stmt = $this->pdo->prepare("insert into th_hotel_prozente (hotel_id, prozent_name, prozent, selected) VALUEs (?, '0%',0,0),(?, '5%',5,0),(?, '10%',10,0),(?, '15%',15,0),(?, '20%',20,0),(?, '25%',25,0),(?, '50%',50,0);");
-                $stmt->execute(array_fill(1,7,$this->id_hotel)); 
+                $stmt->execute(array($this->id_hotel,$this->id_hotel,$this->id_hotel,$this->id_hotel,$this->id_hotel,$this->id_hotel,$this->id_hotel));
+                
             }
         }
     }
@@ -348,7 +354,7 @@ final class UserFactory
      * 
      * @return boolean true if success
      */
-    private function InitAktionen()
+    public function InitAktionen()
     {
         if (!$this->validated)
             return false;

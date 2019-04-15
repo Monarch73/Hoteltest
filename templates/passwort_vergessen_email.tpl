@@ -8,7 +8,7 @@
       <div class="card-body">
           Sehr geehrter Frau/ Herr {$user->owner},<br>
           <br>
-          Um Ihr Passwort zurück zusetzen, müssen Sie auf diesen Link klicken:
+          Um Ihr Passwort zurück zusetzen, müssen Sie auf diesen Link klicken:<br>
           {$url nofilter}<br>
           <br>
           Auf der folgenden Webseite müssen Sie dann Ihr Passwort festlegen.<br>
@@ -23,5 +23,5 @@
           015117535448<br>
       </div>
   </div>
-{include 'includes/footer.tpl}
+{include 'includes/footer.tpl'}
   
